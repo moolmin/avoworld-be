@@ -6,6 +6,20 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "community_post")
 public class Post {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    private int userId;
+    private String title;
+    private String article;
+    private String postPicture;
+    private String editedPostTitle;
+    private String editedPostContent;
+    private int views;
+    private int likes;
+    private LocalDateTime createAt;
+    private LocalDateTime updateAt;
+
     public int getId() {
         return id;
     }
@@ -94,19 +108,4 @@ public class Post {
         this.updateAt = updateAt;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private int userId;
-    private String title;
-    private String article;
-    private String postPicture;
-    private String editedPostTitle;
-    private String editedPostContent;
-    private int views;
-    private int likes;
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
-
-    // Getters and Setters
 }

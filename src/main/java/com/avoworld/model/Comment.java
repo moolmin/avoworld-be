@@ -6,6 +6,28 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "post_comment")
 public class Comment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "post_id")
+    private int postId;
+
+    @Column(name = "user_id")
+    private int userId;
+
+    @Column(name = "comment_content")
+    private String commentContent;
+
+    @Column(name = "edited_comment_content")
+    private String editedCommentContent;
+
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
+
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
+
     public int getId() {
         return id;
     }
@@ -61,16 +83,4 @@ public class Comment {
     public void setUpdateAt(LocalDateTime updateAt) {
         this.updateAt = updateAt;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private int postId;
-    private int userId;
-    private String commentContent;
-    private String editedCommentContent;
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
-
-    // Getters and Setters
 }

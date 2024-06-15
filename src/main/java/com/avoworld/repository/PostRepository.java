@@ -36,4 +36,29 @@ public class PostRepository {
         String sql = "SELECT * FROM community_post";
         return jdbcTemplate.query(sql, postRowMapper);
     }
+
+    public Post findById(int postId) {
+        String sql = "SELECT * FROM community_post WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, postRowMapper, postId);
+    }
+
+    public void deleteById(int postId) {
+        String sql = "DELETE FROM community_post WHERE id = ?";
+        jdbcTemplate.update(sql, postId);
+    }
+
+    public void save(Post post) {
+        String sql = "INSERT INTO community_post (title, article, post_picture, user_id, create_at, views, likes) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, post.getTitle(), post.getArticle(), post.getPostPicture(), post.getUserId(), post.getCreateAt(), post.getViews(), post.getLikes());
+    }
+
+    public void update(Post post) {
+        String sql = "UPDATE community_post SET title = ?, article = ?, post_picture = ?, views = ? WHERE id = ?";
+        jdbcTemplate.update(sql, post.getTitle(), post.getArticle(), post.getPostPicture(), post.getViews(), post.getId());
+    }
+
+    public void incrementViews(Long postId) {
+        String sql = "UPDATE community_post SET views = views + 1 WHERE id = ?";
+        jdbcTemplate.update(sql, postId);
+    }
 }
