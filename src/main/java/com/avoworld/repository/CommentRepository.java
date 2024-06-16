@@ -1,6 +1,6 @@
 package com.avoworld.repository;
 
-import com.avoworld.model.Comment;
+import com.avoworld.entity.Comment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

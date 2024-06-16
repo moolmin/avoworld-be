@@ -1,7 +1,7 @@
 package com.avoworld.controller;
 
-import com.avoworld.model.Post;
-import com.avoworld.model.Comment;
+import com.avoworld.entity.Post;
+import com.avoworld.entity.Comment;
 import com.avoworld.service.PostService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

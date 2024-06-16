@@ -1,4 +1,4 @@
-package com.avoworld.model;
+package com.avoworld.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

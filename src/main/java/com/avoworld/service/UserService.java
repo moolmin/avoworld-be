@@ -1,6 +1,6 @@
 package com.avoworld.service;
 
-import com.avoworld.model.User;
+import com.avoworld.entity.User;
 import com.avoworld.repository.UserRepository;
 import org.springframework.stereotype.Service;
 

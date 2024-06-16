@@ -1,6 +1,6 @@
 package com.avoworld.controller;
 
-import com.avoworld.model.User;
+import com.avoworld.entity.User;
 import com.avoworld.service.UserService;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,7 +1,7 @@
 package com.avoworld.service;
 
-import com.avoworld.model.Post;
-import com.avoworld.model.Comment;
+import com.avoworld.entity.Post;
+import com.avoworld.entity.Comment;
 import com.avoworld.repository.PostRepository;
 import com.avoworld.repository.CommentRepository;
 import org.springframework.stereotype.Service;

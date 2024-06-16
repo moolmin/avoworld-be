@@ -1,7 +1,7 @@
 // PostRepository.java
 package com.avoworld.repository;
 
-import com.avoworld.model.Post;
+import com.avoworld.entity.Post;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

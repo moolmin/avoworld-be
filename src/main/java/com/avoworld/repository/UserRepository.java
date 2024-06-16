@@ -1,7 +1,7 @@
 // UserRepository.java
 package com.avoworld.repository;
 
-import com.avoworld.model.User;
+import com.avoworld.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
