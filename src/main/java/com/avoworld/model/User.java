@@ -16,6 +16,8 @@ public class User {
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
 
+    private String role;
+
     public int getUserId() {
         return userId;
     }
@@ -69,6 +71,14 @@ public class User {
 
     public void setUpdateAt(LocalDateTime updateAt) {
         this.updateAt = updateAt;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
 

@@ -11,6 +11,8 @@ public class Post {
     private int id;
     private int userId;
     private String title;
+    @Lob
+    @Column(columnDefinition="LONGTEXT")
     private String article;
     private String postPicture;
     private String editedPostTitle;
