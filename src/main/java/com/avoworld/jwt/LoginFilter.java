@@ -1,6 +1,9 @@
 package com.avoworld.jwt;
 
+import com.avoworld.dto.CustomUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,10 +23,12 @@ import java.util.Map;
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final JWTUtil jwtUtil;
 
-    public LoginFilter(String url, AuthenticationManager authenticationManager) {
+    public LoginFilter(String url, AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
         super(new AntPathRequestMatcher(url));
         this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -39,18 +44,26 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         return authenticationManager.authenticate(token);
     }
 
+    // 이제 로그인 성공하면 jwt 토큰 발행 ㄱㄱ
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-                                            Authentication authResult) throws IOException, ServletException {
-        SecurityContextHolder.getContext().setAuthentication(authResult);
-        response.getWriter().write("success");
+                                            Authentication authResult) {
+
         System.out.println("success");
+
+        // 오류뜨면 여기 확인해바!!!!
+        CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
+
+        String email = customUserDetails.getUsername();
+
+        String token = jwtUtil.createJwt(email, 60*60*10L);
+
+        response.addHeader("Authorization", "Bearer " + token);
     }
 
     @Override
-    public void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res, AuthenticationException failed) throws IOException {
-        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        res.getWriter().write("failure");
+    public void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res, AuthenticationException failed)  {
+        res.setStatus(401);
         System.out.println("failure");
     }
 

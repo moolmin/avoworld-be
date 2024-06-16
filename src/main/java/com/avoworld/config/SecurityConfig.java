@@ -1,7 +1,9 @@
 package com.avoworld.config;
 
+import com.avoworld.jwt.JWTUtil;
 import com.avoworld.jwt.LoginFilter;
 import com.avoworld.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,17 +23,22 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    private final JWTUtil jwtUtil;
+
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+        this.jwtUtil = new JWTUtil();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(new LoginFilter("/login", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class))),
+                .addFilterBefore(new LoginFilter("/login", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtUtil),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
