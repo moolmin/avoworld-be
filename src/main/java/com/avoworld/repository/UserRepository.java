@@ -12,6 +12,7 @@ import java.util.List;
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
 
+
     public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -27,6 +28,7 @@ public class UserRepository {
         user.setUpdateAt(rs.getTimestamp("update_at") != null ? rs.getTimestamp("update_at").toLocalDateTime() : null);
         return user;
     };
+
 
     public List<User> findAll() {
         String sql = "SELECT * FROM community_user";
