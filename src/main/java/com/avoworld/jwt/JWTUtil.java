@@ -43,10 +43,9 @@ public class JWTUtil {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
     }
 
-    public String createJwt(String email, Long expiredMS) {
-        if (key == null) {
-            throw new IllegalStateException("Key has not been initialized.");
-        }
+    public String createJwt(String email, Long expirationTimeInSeconds) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirationTimeInSeconds * 1000);
 
         Claims claims = Jwts.claims();
         claims.put("email", email);
@@ -54,7 +53,7 @@ public class JWTUtil {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiredMS))
+                .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -34,7 +34,17 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-        Map<String, String> credentials = new ObjectMapper().readValue(request.getInputStream(), HashMap.class);
+        // 요청의 Content-Type이 application/json인지 확인
+        if (!request.getContentType().equals("application/json")) {
+            throw new IllegalArgumentException("Request content type is not application/json");
+        }
+
+        Map<String, String> credentials;
+        try {
+            credentials = new ObjectMapper().readValue(request.getInputStream(), HashMap.class);
+        } catch (IOException e) {
+            throw new ServletException("Failed to read request payload", e);
+        }
 
         String email = credentials.get("email");
         String password = credentials.get("password");
@@ -44,14 +54,12 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         return authenticationManager.authenticate(token);
     }
 
-    // 이제 로그인 성공하면 jwt 토큰 발행 ㄱㄱ
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) {
 
         System.out.println("success");
 
-        // 오류뜨면 여기 확인해바!!!!
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
 
         String email = customUserDetails.getUsername();

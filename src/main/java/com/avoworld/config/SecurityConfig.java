@@ -1,5 +1,6 @@
 package com.avoworld.config;
 
+import com.avoworld.jwt.JWTFilter;
 import com.avoworld.jwt.JWTUtil;
 import com.avoworld.jwt.LoginFilter;
 import com.avoworld.service.CustomUserDetailsService;
@@ -36,10 +37,17 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/login", "/", "join").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(new LoginFilter("/login", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtUtil),
-                        UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new LoginFilter("/login", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+//                .addFilterAt(new LoginFilter("/login", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtUtil),
+//                        UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+
+
+
 
         return http.build();
     }

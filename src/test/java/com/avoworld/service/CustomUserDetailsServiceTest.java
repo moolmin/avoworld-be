@@ -1,7 +1,6 @@
 package com.avoworld.service;
 
 import com.avoworld.entity.User;
-import com.avoworld.dto.CustomUserDetails;
 import com.avoworld.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
