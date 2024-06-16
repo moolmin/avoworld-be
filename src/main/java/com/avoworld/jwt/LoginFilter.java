@@ -1,57 +1,57 @@
 package com.avoworld.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
+public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
-// 이제 SecurityConfig에 로그인필터 등록
-public class LoginFilter extends UsernamePasswordAuthenticationFilter {
+    private final AuthenticationManager authenticationManager;
 
-    private AuthenticationManager authenticationManager;
-
-    public LoginFilter(AuthenticationManager authenticationManager) {
+    public LoginFilter(String url, AuthenticationManager authenticationManager) {
+        super(new AntPathRequestMatcher(url));
         this.authenticationManager = authenticationManager;
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
-        String email = null;
-        String password = null;
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationException, IOException, ServletException {
+        Map<String, String> credentials = new ObjectMapper().readValue(request.getInputStream(), HashMap.class);
 
-        try {
-            Map<String, String> requestBody = new ObjectMapper().readValue(req.getInputStream(), Map.class);
-            email = requestBody.get("email");
-            password = requestBody.get("password");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        String email = credentials.get("email");
+        String password = credentials.get("password");
 
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
 
-        System.out.println("email: " + email);
-        System.out.println("password: " + password);
-
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password, null);
-
-        return authenticationManager.authenticate(authToken);
+        return authenticationManager.authenticate(token);
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) {
-
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+                                            Authentication authResult) throws IOException, ServletException {
+        SecurityContextHolder.getContext().setAuthentication(authResult);
+        response.getWriter().write("success");
+        System.out.println("success");
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res, AuthenticationException failed) {
-
+    public void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res, AuthenticationException failed) throws IOException {
+        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        res.getWriter().write("failure");
+        System.out.println("failure");
     }
+
 }
