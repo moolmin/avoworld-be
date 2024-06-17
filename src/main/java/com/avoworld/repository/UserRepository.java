@@ -67,6 +67,12 @@ public class UserRepository {
         jdbcTemplate.update(sql, user.getNickname(), user.getEmail(), user.getPassword(), user.getProfilePicture());
     }
 
+    public void update(User user) {
+        String sql = "UPDATE community_user SET nickname = ?, email = ?, password = ?, profile_picture = ? WHERE user_id = ?";
+        jdbcTemplate.update(sql, user.getNickname(), user.getEmail(), user.getPassword(), user.getProfilePicture(), user.getUserId());
+    }
+
+
     public void updateProfilePicture(Long userId, String profilePicture) {
         String sql = "UPDATE community_user SET profile_picture = ?, update_at = NOW() WHERE user_id = ?";
         jdbcTemplate.update(sql, profilePicture, userId);

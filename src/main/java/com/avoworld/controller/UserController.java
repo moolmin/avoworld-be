@@ -41,10 +41,10 @@ public class UserController {
         userService.updatePassword(userId, password);
     }
 
-    @PostMapping("/register")
-    public void registerUser(@RequestBody User user) {
-        userService.registerUser(user);
-    }
+//    @PostMapping("/register")
+//    public void registerUser(@RequestBody User user) {
+//        userService.registerUser(user);
+//    }
 
     @PostMapping("/{userId}/profileimg")
     public void updateProfilePicture(@PathVariable Long userId, @RequestParam String profilePicture) {
