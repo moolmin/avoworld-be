@@ -17,7 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 // 요청에 대해 한번만 동작하는 필터
-
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
@@ -58,7 +57,7 @@ public class JWTFilter extends OncePerRequestFilter {
         // 위에서 두개의 조건문을 통해 토큰을 확인함
         // 토큰에서 이메일 획득
         String email = jwtUtil.getEmail(token);
-        System.out.println("User email from token: " + email);
+//        System.out.println("User email from token: " + email);
 
         //userEntity를 생성해서 값 set
         User user = new User();

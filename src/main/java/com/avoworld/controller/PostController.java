@@ -32,7 +32,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    public void deletePost(@PathVariable Long postId) {
+    public void deletePost(@PathVariable("postId") Long postId) {
         postService.deletePost(postId.intValue());
     }
 
@@ -53,7 +53,7 @@ public class PostController {
     }
 
     @GetMapping("/{postId}/comments")
-    public List<Comment> getCommentsByPostId(@PathVariable Long postId) {
+    public List<Comment> getCommentsByPostId(@PathVariable("postId") Long postId) {
         return postService.getCommentsByPostId(postId);
     }
 

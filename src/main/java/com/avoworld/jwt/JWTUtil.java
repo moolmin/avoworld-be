@@ -22,17 +22,17 @@ public class JWTUtil {
 
     @PostConstruct
     public void init() {
-        System.out.println("Initializing JWTUtil...");
-        System.out.println("Secret: " + secret);
+//        System.out.println("Initializing JWTUtil...");
+//        System.out.println("Secret: " + secret);
 
         byte[] byteSecretKey = Decoders.BASE64.decode(secret);
-        System.out.println("Decoded key length: " + byteSecretKey.length);
+//        System.out.println("Decoded key length: " + byteSecretKey.length);
 
         if (byteSecretKey.length < 32) {
             throw new IllegalArgumentException("The decoded key is not long enough. It must be at least 32 bytes.");
         }
         key = Keys.hmacShaKeyFor(byteSecretKey);
-        System.out.println("Key has been initialized.");
+//        System.out.println("Key has been initialized.");
     }
 
     public String getEmail(String token) {
