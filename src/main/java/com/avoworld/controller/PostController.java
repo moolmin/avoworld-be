@@ -72,7 +72,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}/comments/{commentId}")
-    public void deleteComment(@PathVariable Long commentId) {
+    public void deleteComment(@PathVariable("commentId") Long commentId) {
         postService.deleteComment(commentId);
     }
 
