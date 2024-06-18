@@ -58,4 +58,6 @@ public class PostService {
     public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId.intValue());
     }
+
+
 }

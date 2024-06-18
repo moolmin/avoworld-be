@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public class CommentRepository {
-
     private final JdbcTemplate jdbcTemplate;
 
     public CommentRepository(JdbcTemplate jdbcTemplate) {

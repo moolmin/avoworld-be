@@ -56,7 +56,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-                                            Authentication authResult) {
+                                            Authentication authResult) throws IOException {
 
         System.out.println("success");
 
@@ -67,7 +67,28 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         String token = jwtUtil.createJwt(email, 60*60*10L);
 
         response.addHeader("Authorization", "Bearer " + token);
+
+        // JSON 형식으로 응답
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"token\": \"" + token + "\"}");
     }
+
+
+//    @Override
+//    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+//                                            Authentication authResult) {
+//
+//        System.out.println("success");
+//
+//        CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
+//
+//        String email = customUserDetails.getUsername();
+//
+//        String token = jwtUtil.createJwt(email, 60*60*10L);
+//
+//        response.addHeader("Authorization", "Bearer " + token);
+//    }
 
     @Override
     public void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res, AuthenticationException failed)  {

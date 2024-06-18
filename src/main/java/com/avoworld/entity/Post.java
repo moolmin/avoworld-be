@@ -20,6 +20,7 @@ public class Post {
 
     @Column(name = "title")
     private String title;
+    
 
     @Lob
     @Column(name = "article", columnDefinition="LONGTEXT")
@@ -40,9 +41,22 @@ public class Post {
     @Column(name = "likes")
     private int likes;
 
-    @Column(name = "create_at")
+    @Column(name = "create_at", nullable = false, updatable = false)
     private LocalDateTime createAt;
+
 
     @Column(name = "update_at", nullable = true)
     private LocalDateTime updateAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createAt == null) {
+            this.createAt = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateAt = LocalDateTime.now();
+    }
 }

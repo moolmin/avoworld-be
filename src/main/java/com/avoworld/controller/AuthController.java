@@ -38,7 +38,6 @@ public class AuthController {
     @GetMapping("/email")
     public ResponseEntity<Map<String, Object>> getEmailFromToken(@RequestHeader("Authorization") String token) {
         try {
-//            System.out.println("Received token: " + token);
             String email = jwtUtil.getEmail(token.replace("Bearer ", ""));
             Map<String, Object> response = new HashMap<>();
             response.put("email", email);
@@ -48,9 +47,10 @@ public class AuthController {
             return ResponseEntity.status(400).body(Collections.singletonMap("error", "Invalid token"));
         }
     }
-
-
 }
+
+
+
 //    @PostMapping("/login")
 //    public ResponseEntity<Map<String, Object>> login(@RequestBody User loginUser) {
 //        try {

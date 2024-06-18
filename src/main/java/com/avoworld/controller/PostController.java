@@ -59,7 +59,7 @@ public class PostController {
 
 
     @PostMapping("/{postId}/comments")
-    public void createComment(@PathVariable Long postId, @RequestBody Comment comment) {
+    public void createComment(@PathVariable("postId") Long postId, @RequestBody Comment comment) {
         comment.setPostId(postId.intValue());
         postService.createComment(comment);
     }
