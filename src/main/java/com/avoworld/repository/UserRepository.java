@@ -2,6 +2,7 @@
 package com.avoworld.repository;
 
 import com.avoworld.entity.User;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -42,8 +43,17 @@ public class UserRepository {
 
     public User findByEmail(String email) {
         String sql = "SELECT * FROM community_user WHERE email = ?";
-        return jdbcTemplate.queryForObject(sql, userRowMapper, email);
+        List<User> users = jdbcTemplate.query(sql, userRowMapper, email);
+
+        if (users.size() == 1) {
+            return users.get(0);
+        } else if (users.isEmpty()) {
+            return null; // 또는 적절한 예외를 던질 수 있습니다.
+        } else {
+            throw new IncorrectResultSizeDataAccessException(1, users.size());
+        }
     }
+
 
     public void deleteById(Long userId) {
         String deleteUserSql = "DELETE FROM community_user WHERE user_id = ?";

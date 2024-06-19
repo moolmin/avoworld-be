@@ -47,6 +47,19 @@ public class AuthController {
             return ResponseEntity.status(400).body(Collections.singletonMap("error", "Invalid token"));
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, Object>> logout(@RequestHeader("Authorization") String token) {
+        try {
+            // 여기에 토큰을 블랙리스트에 추가하거나 무효화하는 로직을 구현할 수 있습니다.
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Successfully logged out");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(400).body(Collections.singletonMap("error", "Logout failed"));
+        }
+    }
 }
 
 

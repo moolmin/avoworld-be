@@ -28,18 +28,26 @@ public class UserService {
     }
 
     public void updateNickname(Long userId, String nickname) {
-        userRepository.updateNickname(userId, nickname);
+        User user = getUserById(userId);
+        if (user != null) {
+            user.setNickname(nickname);
+            userRepository.save(user);
+        }
     }
 
     public void updatePassword(Long userId, String password) {
-        userRepository.updatePassword(userId, password);
-    }
-
-    public void registerUser(User user) {
-        userRepository.save(user);
+        User user = getUserById(userId);
+        if (user != null) {
+            user.setPassword(password);
+            userRepository.save(user);
+        }
     }
 
     public void updateProfilePicture(Long userId, String profilePicture) {
-        userRepository.updateProfilePicture(userId, profilePicture);
+        User user = getUserById(userId);
+        if (user != null) {
+            user.setProfilePicture(profilePicture);
+            userRepository.save(user);
+        }
     }
 }

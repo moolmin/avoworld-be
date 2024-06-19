@@ -2,11 +2,14 @@ package com.avoworld.config;
 
 import com.avoworld.jwt.JWTFilter;
 import com.avoworld.jwt.JWTUtil;
+import com.avoworld.jwt.JoinFilter;
 import com.avoworld.jwt.LoginFilter;
+import com.avoworld.service.AuthService;
 import com.avoworld.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,19 +28,20 @@ import java.util.Collections;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-
-        return new BCryptPasswordEncoder();
-    }
-
     private final CustomUserDetailsService userDetailsService;
     private final JWTUtil jwtUtil;
+    private final AuthService authService;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService, JWTUtil jwtUtil) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JWTUtil jwtUtil, @Lazy AuthService authService) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
+        this.authService = authService;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -46,9 +50,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/", "/join").permitAll()
+                        .requestMatchers("/api/login", "/", "/api/join").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new LoginFilter("/api/login", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JoinFilter("/api/join", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), authService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

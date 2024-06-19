@@ -9,21 +9,23 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-    @Autowired
-    private UserRepository userRepository;
+
+    private final UserRepository userRepository;
+    private final JWTUtil jwtUtil;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    private JWTUtil jwtUtil;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    public AuthService(UserRepository userRepository, JWTUtil jwtUtil, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
     public String loginUser(User loginUser) {
         User user = userRepository.findByEmail(loginUser.getEmail());
         if (user != null) {
-            // 입력된 비밀번호와 암호화된 비밀번호 비교
             if (bCryptPasswordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
-                return jwtUtil.createJwt(user.getEmail(), 60*60*10L);
+                return jwtUtil.createJwt(user.getEmail(), 60 * 60 * 10L);
             } else {
                 throw new RuntimeException("Invalid password");
             }
@@ -31,4 +33,13 @@ public class AuthService {
             throw new RuntimeException("User not found");
         }
     }
+
+    public void registerUser(User user) {
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new RuntimeException("User already exists");
+        }
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+    }
+
 }
