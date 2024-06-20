@@ -47,12 +47,11 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
             throw new ServletException("Failed to read request payload", e);
         }
 
-        // Extract user information
         String email = userMap.get("email");
         String password = userMap.get("password");
         String nickname = userMap.get("nickname");
         String profilePicture = userMap.get("profile_picture");
-        
+
         User newUser = new User();
         newUser.setEmail(email);
         newUser.setPassword(password);
@@ -60,7 +59,6 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
         newUser.setProfilePicture(profilePicture);
         authService.registerUser(newUser);
 
-        // Authenticate the user
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
         return getAuthenticationManager().authenticate(token);
     }
@@ -71,11 +69,9 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
         String email = customUserDetails.getUsername();
 
-        // Generate JWT token
         String token = jwtUtil.createJwt(email, 60 * 60 * 24 * 1000L); // 24 hours validity
         response.addHeader("Authorization", "Bearer " + token);
 
-        // Respond with JSON
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("{\"token\": \"" + token + "\"}");

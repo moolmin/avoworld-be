@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/", "/api/join").permitAll()
+                        .requestMatchers("/api/login", "/", "/api/join", "api/upload/profile-picture").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new LoginFilter("/api/login", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JoinFilter("/api/join", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), authService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
