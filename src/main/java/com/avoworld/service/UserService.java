@@ -47,7 +47,7 @@ public class UserService {
         User user = getUserById(userId);
         if (user != null) {
             user.setProfilePicture(profilePicture);
-            userRepository.save(user);
+            userRepository.update(user);
         }
     }
 

@@ -1,9 +1,18 @@
 package com.avoworld.controller;
 
 import com.avoworld.entity.User;
+import com.avoworld.service.FileStorageService;
 import com.avoworld.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +25,9 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -48,9 +60,33 @@ public class UserController {
 //    }
 
     @PostMapping("/{userId}/profileimg")
-    public void updateProfilePicture(@PathVariable Long userId, @RequestParam String profilePicture) {
-        userService.updateProfilePicture(userId, profilePicture);
+    public ResponseEntity<String> updateProfilePicture(@PathVariable("userId") Long userId, @RequestParam("profileimg") MultipartFile profileImg) throws IOException {
+        // Save the file to a desired location and get the URL or path
+        String profilePictureUrl = fileStorageService.saveProfileImage(profileImg);
+
+        // Update the profile picture URL in the database
+        userService.updateProfilePicture(userId, profilePictureUrl);
+
+        return ResponseEntity.ok("Profile picture updated successfully");
     }
+
+    private String saveProfileImage(MultipartFile profileImg) throws IOException {
+        String uploadsDir = "/uploads/";
+        Path uploadsPath = Paths.get(uploadsDir);
+
+        // Ensure the directory exists
+        if (!Files.exists(uploadsPath)) {
+            Files.createDirectories(uploadsPath);
+        }
+
+        String filePath = uploadsPath.resolve(profileImg.getOriginalFilename()).toString();
+        File dest = new File(filePath);
+        profileImg.transferTo(dest);
+
+        // Return the URL or path of the saved file
+        return filePath;
+    }
+
 
     @PostMapping("/check-email")
     public boolean checkEmailDuplicate(@RequestBody Map<String, String> request) {

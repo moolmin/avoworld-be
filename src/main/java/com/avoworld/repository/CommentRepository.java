@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Repository
 public class CommentRepository {
@@ -47,7 +48,8 @@ public class CommentRepository {
 
     public void save(Comment comment) {
         String sql = "INSERT INTO post_comment (post_id, comment_content, user_id, create_at) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, comment.getPostId(), comment.getCommentContent(), comment.getUserId(), comment.getCreateAt());
+        LocalDateTime now = LocalDateTime.now();
+        jdbcTemplate.update(sql, comment.getPostId(), comment.getCommentContent(), comment.getUserId(), now);
     }
 
     public void update(Comment comment) {

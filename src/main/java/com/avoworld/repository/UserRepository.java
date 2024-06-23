@@ -83,10 +83,11 @@ public class UserRepository {
     }
 
 
-    public void updateProfilePicture(Long userId, String profilePicture) {
-        String sql = "UPDATE community_user SET profile_picture = ?, update_at = NOW() WHERE user_id = ?";
-        jdbcTemplate.update(sql, profilePicture, userId);
+    public void updateProfilePicture(Long userId, String profilePictureUrl) {
+        String sql = "UPDATE community_user SET profile_picture = ?, updated_at = NOW() WHERE user_id = ?";
+        jdbcTemplate.update(sql, profilePictureUrl, userId);
     }
+
 
     public boolean existsByEmail(String email) {
         String sql = "SELECT COUNT(*) FROM community_user WHERE user_id = ?";

@@ -35,7 +35,7 @@ public class SecurityConfig {
     private final FileStorageService fileStorageService;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService, JWTUtil jwtUtil, @Lazy AuthService authService, FileStorageService fileStorageService) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JWTUtil jwtUtil, @Lazy AuthService authService, @Lazy FileStorageService fileStorageService) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.authService = authService;
@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login", "/", "/api/join", "api/accounts/check-email", "/uploads/**", "api/posts/**").permitAll()
+                        .requestMatchers("/api/upload/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new LoginFilter("/api/login", authenticationManager, jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JoinFilter("/api/join", authenticationManager, authService, jwtUtil, fileStorageService), UsernamePasswordAuthenticationFilter.class)
