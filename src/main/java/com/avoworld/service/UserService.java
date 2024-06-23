@@ -2,6 +2,7 @@ package com.avoworld.service;
 
 import com.avoworld.entity.User;
 import com.avoworld.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +11,11 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public List<User> getAllUsers() {
@@ -31,15 +34,15 @@ public class UserService {
         User user = getUserById(userId);
         if (user != null) {
             user.setNickname(nickname);
-            userRepository.save(user);
+            userRepository.update(user);
         }
     }
 
     public void updatePassword(Long userId, String password) {
         User user = getUserById(userId);
         if (user != null) {
-            user.setPassword(password);
-            userRepository.save(user);
+            user.setPassword(bCryptPasswordEncoder.encode(password));
+            userRepository.update(user);
         }
     }
 

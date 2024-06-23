@@ -82,16 +82,48 @@ public class PostController {
         return ResponseEntity.ok("Post created successfully");
     }
 
-    @PutMapping("/{postId}")
-    public void updatePost(@PathVariable("postId") Long postId, @RequestBody Post post) {
+    @PutMapping(value = "/{postId}", consumes = "multipart/form-data")
+    public ResponseEntity<String> updatePost(@PathVariable("postId") Long postId,
+                                             @RequestParam("file") MultipartFile file,
+                                             @RequestParam("data") MultipartFile data) throws IOException, ServletException {
+        String postJson = extractJsonFromFile(data);
+
+        Post post = parsePostJson(postJson);
         post.setId(postId.intValue());
-        postService.updatePost(post);
+
+        postService.updatePost(post, file);
+        return ResponseEntity.ok("Post updated successfully");
     }
 
-    @PutMapping("/{postId}/views")
-    public void incrementPostViews(@PathVariable("postId") Long postId) {
-        postService.incrementPostViews(postId);
+    private String extractJsonFromFile(MultipartFile data) throws IOException, ServletException {
+        String postJson;
+        try (InputStream inputStream = data.getInputStream();
+             InputStreamReader reader = new InputStreamReader(inputStream);
+             BufferedReader bufferedReader = new BufferedReader(reader)) {
+            postJson = bufferedReader.lines().collect(Collectors.joining("\n"));
+        }
+
+        if (postJson == null || postJson.isEmpty()) {
+            throw new ServletException("Data parameter is missing");
+        }
+
+        return postJson;
     }
+
+    private Post parsePostJson(String postJson) throws ServletException {
+        Post post;
+        try {
+            post = objectMapper.readValue(postJson, Post.class);
+        } catch (IOException e) {
+            throw new ServletException("Failed to read request payload", e);
+        }
+        return post;
+    }
+
+//    @PutMapping("/{postId}/views")
+//    public void incrementPostViews(@PathVariable("postId") Long postId) {
+//        postService.incrementPostViews(postId);
+//    }
 
     @GetMapping("/{postId}/comments")
     public List<Comment> getCommentsByPostId(@PathVariable("postId") Long postId) {

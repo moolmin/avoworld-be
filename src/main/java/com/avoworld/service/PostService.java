@@ -41,7 +41,10 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public void updatePost(Post post) {
+    public void updatePost(Post post, MultipartFile file) {
+        String fileName = fileStorageService.store(file);
+        String fileUrl = fileStorageService.getFileUrl(fileName);
+        post.setPostPicture(fileUrl);
         postRepository.update(post);
     }
 

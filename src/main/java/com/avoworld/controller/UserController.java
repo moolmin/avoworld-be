@@ -35,29 +35,39 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable Long userId) {
+    public User getUserById(@PathVariable("userId") Long userId) {
         return userService.getUserById(userId);
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Long userId) {
+    public void deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
     }
 
     @PutMapping("/{userId}/nickname")
-    public void updateNickname(@PathVariable Long userId, @RequestBody String nickname) {
+    public ResponseEntity<?> updateNickname(@PathVariable("userId") Long userId, @RequestBody Map<String, String> body) {
+        String nickname = body.get("nickname");
+        if (nickname == null || nickname.isEmpty()) {
+            return ResponseEntity.badRequest().body("Nickname cannot be empty");
+        }
         userService.updateNickname(userId, nickname);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{userId}/password")
-    public void updatePassword(@PathVariable Long userId, @RequestBody String password) {
+    public ResponseEntity<?> updatePassword(@PathVariable("userId") Long userId, @RequestBody Map<String, String> body) {
+        String password = body.get("password");
+        if (password == null || password.isEmpty()) {
+            return ResponseEntity.badRequest().body("password cannot be empty");
+        }
         userService.updatePassword(userId, password);
+        return ResponseEntity.ok().build();
     }
-
-//    @PostMapping("/register")
-//    public void registerUser(@RequestBody User user) {
-//        userService.registerUser(user);
+//    public void updatePassword(@PathVariable("userId") Long userId, @RequestBody String password) {
+//        userService.updatePassword(userId, password);
 //    }
+
+
 
     @PostMapping("/{userId}/profileimg")
     public ResponseEntity<String> updateProfilePicture(@PathVariable("userId") Long userId, @RequestParam("profileimg") MultipartFile profileImg) throws IOException {
@@ -70,22 +80,22 @@ public class UserController {
         return ResponseEntity.ok("Profile picture updated successfully");
     }
 
-    private String saveProfileImage(MultipartFile profileImg) throws IOException {
-        String uploadsDir = "/uploads/";
-        Path uploadsPath = Paths.get(uploadsDir);
-
-        // Ensure the directory exists
-        if (!Files.exists(uploadsPath)) {
-            Files.createDirectories(uploadsPath);
-        }
-
-        String filePath = uploadsPath.resolve(profileImg.getOriginalFilename()).toString();
-        File dest = new File(filePath);
-        profileImg.transferTo(dest);
-
-        // Return the URL or path of the saved file
-        return filePath;
-    }
+//    private String saveProfileImage(MultipartFile profileImg) throws IOException {
+//        String uploadsDir = "/uploads/";
+//        Path uploadsPath = Paths.get(uploadsDir);
+//
+//        // Ensure the directory exists
+//        if (!Files.exists(uploadsPath)) {
+//            Files.createDirectories(uploadsPath);
+//        }
+//
+//        String filePath = uploadsPath.resolve(profileImg.getOriginalFilename()).toString();
+//        File dest = new File(filePath);
+//        profileImg.transferTo(dest);
+//
+//        // Return the URL or path of the saved file
+//        return filePath;
+//    }
 
 
     @PostMapping("/check-email")
