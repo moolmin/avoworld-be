@@ -17,11 +17,16 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class JoinFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -40,18 +45,43 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-//        if (!"multipart/form-data".equalsIgnoreCase(request.getContentType())) {
-//            throw new IllegalArgumentException("Request content type is not multipart/form-data");
-//        }
 
-        StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
-        MultipartFile file = resolver.resolveMultipart(request).getFile("file");
+        if (!isMultipartContent(request)) {
+            throw new ServletException("Content type 'multipart/form-data' required");
+        }
+
+        MultipartHttpServletRequest multipartRequest = new StandardServletMultipartResolver().resolveMultipart(request);
+        MultipartFile file = multipartRequest.getFile("file");
+
+
+        // 로그 추가
+        multipartRequest.getParameterMap().forEach((key, value) -> {
+            System.out.println("Parameter name: " + key);
+            for (String val : value) {
+                System.out.println("Value: " + val);
+            }
+        });
+
+        // 'data' 파라미터를 Blob 형태로 수신하여 JSON으로 변환
+        String data = null;
+        try (InputStream inputStream = multipartRequest.getFile("data").getInputStream();
+             InputStreamReader reader = new InputStreamReader(inputStream);
+             BufferedReader bufferedReader = new BufferedReader(reader)) {
+            data = bufferedReader.lines().collect(Collectors.joining("\n"));
+        }
+
+        System.out.println("Data parameter value: " + data);
+
+        if (data == null) {
+            throw new ServletException("Data parameter is missing");
+        }
 
         Map<String, String> userMap;
         try {
-            userMap = new ObjectMapper().readValue(request.getParameter("data"), HashMap.class);
+            userMap = new ObjectMapper().readValue(data, HashMap.class);
         } catch (IOException e) {
             throw new ServletException("Failed to read request payload", e);
+
         }
 
         String email = userMap.get("email");
@@ -73,6 +103,10 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
         return getAuthenticationManager().authenticate(token);
+    }
+
+    private boolean isMultipartContent(HttpServletRequest request) {
+        return request != null && request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/");
     }
 
     @Override

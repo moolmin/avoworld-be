@@ -5,6 +5,7 @@ import com.avoworld.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -49,5 +50,11 @@ public class UserController {
     @PostMapping("/{userId}/profileimg")
     public void updateProfilePicture(@PathVariable Long userId, @RequestParam String profilePicture) {
         userService.updateProfilePicture(userId, profilePicture);
+    }
+
+    @PostMapping("/check-email")
+    public boolean checkEmailDuplicate(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        return userService.isEmailDuplicate(email);
     }
 }

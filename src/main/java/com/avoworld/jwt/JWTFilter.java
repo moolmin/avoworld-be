@@ -22,18 +22,26 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
     public JWTFilter(JWTUtil jwtUtil) {
-
         this.jwtUtil = jwtUtil;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        String requestURI = request.getRequestURI();
+
+        // 회원가입 요청에는 토큰 요청 제외
+        if ("/api/join".equals(requestURI) || "/api/accounts/check-email".equals(requestURI)) {
+            System.out.println("Bypassing JWT filter for: " + requestURI); // Log the bypassing
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         //request에서 Authorization 헤더 찾기
         String authorization = request.getHeader("Authorization");
 
         // Authorization 헤더 검증
-        if (authorization == null && authorization.startsWith("Bearer ")) {
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
             System.out.println("token null or does not start with Bearer");
             filterChain.doFilter(request, response);
 

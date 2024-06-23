@@ -50,4 +50,8 @@ public class UserService {
             userRepository.save(user);
         }
     }
+
+    public boolean isEmailDuplicate(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }

@@ -87,4 +87,10 @@ public class UserRepository {
         String sql = "UPDATE community_user SET profile_picture = ?, update_at = NOW() WHERE user_id = ?";
         jdbcTemplate.update(sql, profilePicture, userId);
     }
+
+    public boolean existsByEmail(String email) {
+        String sql = "SELECT COUNT(*) FROM community_user WHERE user_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
+        return count != null && count > 0;
+    }
 }
