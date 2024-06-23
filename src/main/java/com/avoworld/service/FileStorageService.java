@@ -2,6 +2,7 @@ package com.avoworld.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,7 +33,15 @@ public class FileStorageService {
         }
     }
 
+
     public Path load(String filename) {
         return rootLocation.resolve(filename);
+    }
+
+    public String getFileUrl(String filename) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/uploads/")
+                .path(filename)
+                .toUriString();
     }
 }

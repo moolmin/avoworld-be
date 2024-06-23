@@ -30,10 +30,7 @@ public class FileUploadController {
     @PostMapping
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String filename = fileStorageService.store(file);
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/upload/download/")
-                .path(filename)
-                .toUriString();
+        String fileDownloadUri = fileStorageService.getFileUrl(filename);
 
         return ResponseEntity.ok(fileDownloadUri);
     }
@@ -41,7 +38,7 @@ public class FileUploadController {
     @GetMapping("/download/{filename:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
         Path file = fileStorageService.load(filename);
-        Resource resource = null;
+        Resource resource;
         try {
             resource = new UrlResource(file.toUri());
         } catch (MalformedURLException e) {
@@ -57,10 +54,7 @@ public class FileUploadController {
     @PostMapping("/profile-picture")
     public ResponseEntity<Map<String, String>> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
         String filename = fileStorageService.store(file);
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/uploads/")
-                .path(filename)
-                .toUriString();
+        String fileDownloadUri = fileStorageService.getFileUrl(filename);
 
         Map<String, String> response = new HashMap<>();
         response.put("url", fileDownloadUri);

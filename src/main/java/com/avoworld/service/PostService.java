@@ -36,7 +36,8 @@ public class PostService {
 
     public void createPost(Post post, MultipartFile file) {
         String fileName = fileStorageService.store(file);
-        post.setPostPicture(fileName);  // Assuming you have a setter for postPicture in Post class
+        String fileUrl = fileStorageService.getFileUrl(fileName);
+        post.setPostPicture(fileUrl);
         postRepository.save(post);
     }
 

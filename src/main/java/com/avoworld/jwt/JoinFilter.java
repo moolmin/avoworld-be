@@ -55,15 +55,15 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
 
 
         // 로그 추가
-        multipartRequest.getParameterMap().forEach((key, value) -> {
-            System.out.println("Parameter name: " + key);
-            for (String val : value) {
-                System.out.println("Value: " + val);
-            }
-        });
+//        multipartRequest.getParameterMap().forEach((key, value) -> {
+//            System.out.println("Parameter name: " + key);
+//            for (String val : value) {
+//                System.out.println("Value: " + val);
+//            }
+//        });
 
         // 'data' 파라미터를 Blob 형태로 수신하여 JSON으로 변환
-        String data = null;
+        String data;
         try (InputStream inputStream = multipartRequest.getFile("data").getInputStream();
              InputStreamReader reader = new InputStreamReader(inputStream);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
@@ -81,8 +81,8 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
             userMap = new ObjectMapper().readValue(data, HashMap.class);
         } catch (IOException e) {
             throw new ServletException("Failed to read request payload", e);
-
         }
+
 
         String email = userMap.get("email");
         String password = userMap.get("password");
@@ -95,7 +95,7 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
 
         if (file != null && !file.isEmpty()) {
             String filename = fileStorageService.store(file);
-            String fileDownloadUri = "/uploads/" + filename;
+            String fileDownloadUri = fileStorageService.getFileUrl(filename);
             newUser.setProfilePicture(fileDownloadUri);
         }
 

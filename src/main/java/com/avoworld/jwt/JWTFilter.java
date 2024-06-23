@@ -31,7 +31,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         // 회원가입 요청에는 토큰 요청 제외
-        if ("/api/join".equals(requestURI) || "/api/accounts/check-email".equals(requestURI)) {
+        if ("/api/join".equals(requestURI) || "/api/accounts/check-email".equals(requestURI) || requestURI.startsWith("/uploads/")) {
             System.out.println("Bypassing JWT filter for: " + requestURI); // Log the bypassing
             filterChain.doFilter(request, response);
             return;
