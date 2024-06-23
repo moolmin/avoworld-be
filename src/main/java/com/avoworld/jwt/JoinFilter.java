@@ -3,6 +3,7 @@ package com.avoworld.jwt;
 import com.avoworld.dto.CustomUserDetails;
 import com.avoworld.entity.User;
 import com.avoworld.service.AuthService;
+import com.avoworld.service.FileStorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,25 +27,29 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
 
     private final AuthService authService;
     private final JWTUtil jwtUtil;
+    private final FileStorageService fileStorageService;
 
-    public JoinFilter(String url, AuthenticationManager authenticationManager, @Lazy AuthService authService, JWTUtil jwtUtil) {
+    public JoinFilter(String url, AuthenticationManager authenticationManager, @Lazy AuthService authService, JWTUtil jwtUtil, FileStorageService fileStorageService) {
         super(new AntPathRequestMatcher(url));
         setAuthenticationManager(authenticationManager);
         this.authService = authService;
         this.jwtUtil = jwtUtil;
+        this.fileStorageService = fileStorageService;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-        // Ensure the request's content type is application/json
-        if (!"application/json".equalsIgnoreCase(request.getContentType())) {
-            throw new IllegalArgumentException("Request content type is not application/json");
-        }
+//        if (!"multipart/form-data".equalsIgnoreCase(request.getContentType())) {
+//            throw new IllegalArgumentException("Request content type is not multipart/form-data");
+//        }
+
+        StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
+        MultipartFile file = resolver.resolveMultipart(request).getFile("file");
 
         Map<String, String> userMap;
         try {
-            userMap = new ObjectMapper().readValue(request.getInputStream(), HashMap.class);
+            userMap = new ObjectMapper().readValue(request.getParameter("data"), HashMap.class);
         } catch (IOException e) {
             throw new ServletException("Failed to read request payload", e);
         }
@@ -50,13 +57,18 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
         String email = userMap.get("email");
         String password = userMap.get("password");
         String nickname = userMap.get("nickname");
-        String profilePicture = userMap.get("profile_picture");
 
         User newUser = new User();
         newUser.setEmail(email);
         newUser.setPassword(password);
         newUser.setNickname(nickname);
-        newUser.setProfilePicture(profilePicture);
+
+        if (file != null && !file.isEmpty()) {
+            String filename = fileStorageService.store(file);
+            String fileDownloadUri = "/uploads/" + filename;
+            newUser.setProfilePicture(fileDownloadUri);
+        }
+
         authService.registerUser(newUser);
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);

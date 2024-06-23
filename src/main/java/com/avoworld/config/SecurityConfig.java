@@ -6,6 +6,7 @@ import com.avoworld.jwt.JoinFilter;
 import com.avoworld.jwt.LoginFilter;
 import com.avoworld.service.AuthService;
 import com.avoworld.service.CustomUserDetailsService;
+import com.avoworld.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,12 +32,14 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final JWTUtil jwtUtil;
     private final AuthService authService;
+    private final FileStorageService fileStorageService;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService, JWTUtil jwtUtil, @Lazy AuthService authService) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JWTUtil jwtUtil, @Lazy AuthService authService, FileStorageService fileStorageService) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.authService = authService;
+        this.fileStorageService = fileStorageService;
     }
 
     @Bean
@@ -46,14 +49,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        AuthenticationManager authenticationManager = authenticationManager(http.getSharedObject(AuthenticationConfiguration.class));
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/", "/api/join", "api/upload/profile-picture").permitAll()
+                        .requestMatchers("/api/login", "/", "/api/join").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(new LoginFilter("/api/login", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtUtil), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JoinFilter("/api/join", authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), authService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LoginFilter("/api/login", authenticationManager, jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JoinFilter("/api/join", authenticationManager, authService, jwtUtil, fileStorageService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

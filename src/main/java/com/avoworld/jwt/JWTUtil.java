@@ -47,6 +47,7 @@ public class JWTUtil {
 
         return Jwts.builder()
                 .setClaims(claims)
+                .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS256)

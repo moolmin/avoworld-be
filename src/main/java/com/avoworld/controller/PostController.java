@@ -3,6 +3,7 @@ package com.avoworld.controller;
 import com.avoworld.entity.Post;
 import com.avoworld.entity.Comment;
 import com.avoworld.service.PostService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,9 +17,11 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final ObjectMapper objectMapper;
 
-    public PostController(PostService postService) {
+    public PostController(PostService postService, ObjectMapper objectMapper) {
         this.postService = postService;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping
@@ -27,7 +30,7 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public Post getPostById(@PathVariable Long postId) {
+    public Post getPostById(@PathVariable("postId") Long postId) {
         return postService.getPostById(postId.intValue());
     }
 
@@ -36,19 +39,20 @@ public class PostController {
         postService.deletePost(postId.intValue());
     }
 
-    @PostMapping
-    public void createPost(@RequestBody Post post) {
-        postService.createPost(post);
+    @PostMapping(consumes = "multipart/form-data")
+    public void createPost(@RequestParam("file") MultipartFile file, @RequestParam("post") String postJson) throws IOException {
+        Post post = objectMapper.readValue(postJson, Post.class);
+        postService.createPost(post, file);
     }
 
     @PutMapping("/{postId}")
-    public void updatePost(@PathVariable Long postId, @RequestBody Post post) {
+    public void updatePost(@PathVariable("postId") Long postId, @RequestBody Post post) {
         post.setId(postId.intValue());
         postService.updatePost(post);
     }
 
     @PutMapping("/{postId}/views")
-    public void incrementPostViews(@PathVariable Long postId) {
+    public void incrementPostViews(@PathVariable("postId") Long postId) {
         postService.incrementPostViews(postId);
     }
 
@@ -65,7 +69,7 @@ public class PostController {
     }
 
     @PutMapping("/{postId}/comments/{commentId}")
-    public void updateComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody Comment comment) {
+    public void updateComment(@PathVariable("commentId") Long postId, @PathVariable("commentId") Long commentId, @RequestBody Comment comment) {
         comment.setId(commentId.intValue());
         comment.setPostId(postId.intValue());
         postService.updateComment(comment);
@@ -76,15 +80,15 @@ public class PostController {
         postService.deleteComment(commentId);
     }
 
-    @PostMapping("/{postId}/image")
-    public String uploadPostImage(@PathVariable Long postId, @RequestParam("postImage") MultipartFile postImage) throws IOException {
-        if (postImage.isEmpty()) {
-            throw new IllegalArgumentException("No file uploaded");
-        }
-        String fileName = System.currentTimeMillis() + "-" + postImage.getOriginalFilename();
-        String uploadDir = "uploads/";
-        Files.createDirectories(Paths.get(uploadDir));
-        Files.write(Paths.get(uploadDir + fileName), postImage.getBytes());
-        return "/uploads/" + fileName;
-    }
+//    @PostMapping("/{postId}/image")
+//    public String uploadPostImage(@PathVariable("postId") Long postId, @RequestParam("postImage") MultipartFile postImage) throws IOException {
+//        if (postImage.isEmpty()) {
+//            throw new IllegalArgumentException("No file uploaded");
+//        }
+//        String fileName = System.currentTimeMillis() + "-" + postImage.getOriginalFilename();
+//        String uploadDir = "uploads/";
+//        Files.createDirectories(Paths.get(uploadDir));
+//        Files.write(Paths.get(uploadDir + fileName), postImage.getBytes());
+//        return "/uploads/" + fileName;
+//    }
 }

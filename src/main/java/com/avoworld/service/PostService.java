@@ -5,6 +5,7 @@ import com.avoworld.entity.Comment;
 import com.avoworld.repository.PostRepository;
 import com.avoworld.repository.CommentRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -13,10 +14,12 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final FileStorageService fileStorageService;
 
-    public PostService(PostRepository postRepository, CommentRepository commentRepository) {
+    public PostService(PostRepository postRepository, CommentRepository commentRepository, FileStorageService fileStorageService) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     public List<Post> getAllPosts() {
@@ -31,7 +34,9 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public void createPost(Post post) {
+    public void createPost(Post post, MultipartFile file) {
+        String fileName = fileStorageService.store(file);
+        post.setPostPicture(fileName);  // Assuming you have a setter for postPicture in Post class
         postRepository.save(post);
     }
 
@@ -58,6 +63,4 @@ public class PostService {
     public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId.intValue());
     }
-
-
 }
