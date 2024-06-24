@@ -48,7 +48,12 @@ public class PostService {
         postRepository.update(post);
     }
 
-    public void updatePostWithoutFile(Post post) {
+
+
+    public void updatePostWithoutFile(Post post, String postPicture) {
+        if (postPicture != null && !postPicture.isEmpty()) {
+            post.setPostPicture(postPicture);
+        }
         postRepository.update(post);
     }
 

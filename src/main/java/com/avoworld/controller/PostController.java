@@ -84,17 +84,16 @@ public class PostController {
 
     @PutMapping(value = "/{postId}", consumes = "multipart/form-data")
     public ResponseEntity<String> updatePost(@PathVariable("postId") Long postId,
-                                             @RequestParam("file") MultipartFile file,
-                                             @RequestParam("data") MultipartFile data) throws IOException, ServletException {
-        String postJson = extractJsonFromFile(data);
-
+                                             @RequestParam(value = "file", required = false) MultipartFile file,
+                                             @RequestParam(value = "postPicture", required = false) String postPicture,
+                                             @RequestParam("data") String postJson) throws IOException, ServletException {
         Post post = parsePostJson(postJson);
         post.setId(postId.intValue());
 
         if (file != null && !file.isEmpty()) {
             postService.updatePost(post, file);
         } else {
-            postService.updatePostWithoutFile(post);
+            postService.updatePostWithoutFile(post, postPicture);
         }
         return ResponseEntity.ok("Post updated successfully");
     }
@@ -114,14 +113,9 @@ public class PostController {
         return postJson;
     }
 
-    private Post parsePostJson(String postJson) throws ServletException {
-        Post post;
-        try {
-            post = objectMapper.readValue(postJson, Post.class);
-        } catch (IOException e) {
-            throw new ServletException("Failed to read request payload", e);
-        }
-        return post;
+    private Post parsePostJson(String postJson) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(postJson, Post.class);
     }
 
 //    @PutMapping("/{postId}/views")
