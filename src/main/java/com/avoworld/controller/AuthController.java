@@ -23,6 +23,8 @@ public class AuthController {
     @Autowired
     private JWTUtil jwtUtil;
 
+    private static final String BEARER_PREFIX = "Bearer ";
+
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody User loginUser) {
         try {
@@ -51,17 +53,22 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Map<String, Object>> logout(@RequestHeader("Authorization") String token) {
         try {
-            String cleanedToken = token.replace("Bearer ", "");
+            if (token == null || !token.startsWith(BEARER_PREFIX)) {
+                return ResponseEntity.status(400).body(Collections.singletonMap("error", "Invalid Authorization header"));
+            }
+
+            String cleanedToken = token.substring(BEARER_PREFIX.length());
             authService.invalidateToken(cleanedToken);
+
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Successfully logged out");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(400).body(Collections.singletonMap("error", "Logout failed"));
+            // Log the exception with a proper logging framework
+            e.printStackTrace(); // Replace with proper logging
+            return ResponseEntity.status(500).body(Collections.singletonMap("error", "Logout failed due to server error"));
         }
     }
-
 
 }
 

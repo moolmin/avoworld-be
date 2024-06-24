@@ -43,8 +43,13 @@ public class PostRepository {
     }
 
     public void deleteById(int postId) {
-        String sql = "DELETE FROM community_post WHERE id = ?";
-        jdbcTemplate.update(sql, postId);
+        // Delete related comments first
+        String deleteCommentsSql = "DELETE FROM post_comment WHERE post_id = ?";
+        jdbcTemplate.update(deleteCommentsSql, postId);
+
+        // Now delete the post
+        String deletePostSql = "DELETE FROM community_post WHERE id = ?";
+        jdbcTemplate.update(deletePostSql, postId);
     }
 
     public void save(Post post) {
