@@ -91,7 +91,11 @@ public class PostController {
         Post post = parsePostJson(postJson);
         post.setId(postId.intValue());
 
-        postService.updatePost(post, file);
+        if (file != null && !file.isEmpty()) {
+            postService.updatePost(post, file);
+        } else {
+            postService.updatePostWithoutFile(post);
+        }
         return ResponseEntity.ok("Post updated successfully");
     }
 

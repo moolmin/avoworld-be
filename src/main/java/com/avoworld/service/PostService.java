@@ -48,6 +48,10 @@ public class PostService {
         postRepository.update(post);
     }
 
+    public void updatePostWithoutFile(Post post) {
+        postRepository.update(post);
+    }
+
     public void incrementPostViews(Long postId) {
         postRepository.incrementViews(postId);
     }
