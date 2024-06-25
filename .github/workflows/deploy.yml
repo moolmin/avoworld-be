@@ -21,5 +21,10 @@ jobs:
         shell: bash
 
       - name: Build and Test
+        env:
+          DB_USERNAME: moolmin
+          DB_PASSWORD: Aaaa123!!
+          DB_URL: jdbc:mysql://localhost:3306/community_db
+          JWT_KEY: f3c2e1a9d8b7c6e5d4f3g2h1i9j0k1l2m3n4o5p6q7r8s9t0g2h1i9j0k1l2m3n
         run: ./gradlew build test
 
