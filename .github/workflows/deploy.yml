@@ -23,7 +23,7 @@ jobs:
       - name: Build and Test
         run: ./gradlew build test
         env:
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_URL: jdbc:mysql://localhost:3306/community_db
+          DB_USERNAME: moolmin
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           JWT_KEY: ${{ secrets.JWT_KEY }}
