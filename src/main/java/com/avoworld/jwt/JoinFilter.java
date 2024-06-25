@@ -52,6 +52,7 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
 
         MultipartHttpServletRequest multipartRequest = new StandardServletMultipartResolver().resolveMultipart(request);
         MultipartFile file = multipartRequest.getFile("file");
+//        MultipartFile dataFile = multipartRequest.getFile("data");
 
 
         // 로그 추가

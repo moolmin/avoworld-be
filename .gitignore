@@ -20,6 +20,7 @@ bin/
 ### IntelliJ IDEA ###
 #application.properties
 .env
+.env*
 
 .idea
 *.iws
@@ -38,4 +39,5 @@ out/
 
 ### VS Code ###
 .vscode/
+src/main/resources/properties/env.properties
 #src/main/resources/application.properties

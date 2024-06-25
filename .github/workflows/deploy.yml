@@ -21,4 +21,10 @@ jobs:
         shell: bash
 
       - name: Build and Test
+        env:
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_URL: ${{ secrets.DB_URL }}
         run: ./gradlew build test
+
