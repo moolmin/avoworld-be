@@ -58,9 +58,9 @@ public class FileStorageService {
             }
 
             File convertedFile = convert(file, filename);
-            String uploadImageUrl = putS3(convertedFile, filename);
+            String s3Url = putS3(convertedFile, filename);
             removeNewFile(convertedFile);
-            return uploadImageUrl;
+            return s3Url;
         } catch (IOException e) {
             logger.error("Failed to store file: {}", e.getMessage());
             throw new RuntimeException("Failed to store file: " + e.getMessage(), e);
@@ -69,13 +69,6 @@ public class FileStorageService {
 
     public Path load(String filename) {
         return rootLocation.resolve(filename);
-    }
-
-    public String getFileUrl(String filename) {
-        return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/uploads/")
-                .path(filename)
-                .toUriString();
     }
 
     public String saveProfileImage(MultipartFile profileImg) throws IOException {
