@@ -44,6 +44,11 @@ dependencies {
     implementation 'org.springframework:spring-orm:6.1.8'
 }
 
+
+jar {
+    enabled = false
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
