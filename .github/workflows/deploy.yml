@@ -47,6 +47,15 @@ jobs:
       - name: Push Docker image to Amazon ECR
         run: docker push ${{ steps.login-ecr.outputs.registry }}/avoworld:${{ github.sha }}
 
+      - name: SSH into EC2 to login to ECR
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+
       - name: Pull Docker image from ECR
         uses: appleboy/ssh-action@master
         with:
@@ -54,8 +63,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_URL }}
-            sudo docker pull ${{ secrets.ECR_URL }}/avoworld:${{ github.sha }}
+            sudo docker pull ${{ steps.login-ecr.outputs.registry }}/avoworld:${{ github.sha }}
 
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
@@ -66,4 +74,4 @@ jobs:
           script: |
             sudo docker stop avoworld || true
             sudo docker rm avoworld || true
-            sudo docker run -d -p 8080:8080 --name avoworld ${{ secrets.ECR_URL }}/avoworld:${{ github.sha }}
+            sudo docker run -d -p 8080:8080 --name avoworld ${{ steps.login-ecr.outputs.registry }}/avoworld:${{ github.sha }}
