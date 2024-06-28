@@ -58,6 +58,21 @@ jobs:
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
             echo "Login successful"
 
+      - name: SSH into EC2 and clean up Docker resources
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            echo "Stopping and removing existing containers"
+            sudo docker ps -q | xargs -r sudo docker stop
+            sudo docker ps -asq | xargs -r sudo docker rm
+            echo "Removing unused Docker images"
+            sudo docker images -q | xargs -r sudo docker rmi
+            echo "Pruning Docker system"
+            sudo docker system prune -af
+
       - name: Pull Docker image from ECR
         uses: appleboy/ssh-action@master
         with:
