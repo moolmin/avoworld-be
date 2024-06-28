@@ -50,9 +50,9 @@ jobs:
       - name: Pull Docker image from ECR
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_IP }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
           script: |
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
             sudo docker pull ${{ steps.login-ecr.outputs.registry }}/avoworld:${{ github.sha }}
