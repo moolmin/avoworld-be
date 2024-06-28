@@ -19,7 +19,7 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
-      - name: Build with Gradle (skip tests)
+      - name: Build with Gradle
         run: ./gradlew build -x test
 
       - name: Configure AWS credentials
