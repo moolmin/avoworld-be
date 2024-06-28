@@ -70,4 +70,12 @@ jobs:
             docker rm avoworld || true
             
             # Run a new container with the updated image
-            docker run -d --name avoworld -p 8080:8080 ${{ secrets.ECR_URL }}/avoworld:latest
+            docker run -d --name avoworld -p 8080:8080 \
+              -e DB_URL=${{ secrets.DB_URL }} \
+              -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e JWT_KEY=${{ secrets.JWT_KEY }} \
+              -e AWS_S3_REGION=${{ secrets.AWS_REGION }} \
+              -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
+              -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
+              ${{ secrets.ECR_URL }}/avoworld:latest
