@@ -78,4 +78,5 @@ jobs:
               -e AWS_S3_REGION=${{ secrets.AWS_REGION }} \
               -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
               -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
+              -e S3_BUCKET=${{ secrets.S3_BUCKET }} \
               ${{ secrets.ECR_URL }}/avoworld:latest
