@@ -11,9 +11,6 @@ public class MainController {
 
     @GetMapping("/")
     public String mainP() {
-
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        return "Main Page: " + name;
+        return "실뱌의 avoworld를 위한 서버입니다.";
     }
 }

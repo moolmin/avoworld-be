@@ -54,7 +54,7 @@ public class FileStorageService {
         String filename = UUID.randomUUID().toString() + "-" + sanitizeFilename(file.getOriginalFilename());
         try {
             if (file.isEmpty()) {
-                throw new RuntimeException("Failed to store empty file.");
+                throw new RuntimeException("Failed to store aempty file.");
             }
 
             File convertedFile = convert(file, filename);

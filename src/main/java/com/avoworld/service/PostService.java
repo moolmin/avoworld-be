@@ -35,15 +35,13 @@ public class PostService {
     }
 
     public void createPost(Post post, MultipartFile file) {
-        String fileName = fileStorageService.store(file);
-        String fileUrl = fileStorageService.getFileUrl(fileName);
+        String fileUrl = fileStorageService.store(file);
         post.setPostPicture(fileUrl);
         postRepository.save(post);
     }
 
     public void updatePost(Post post, MultipartFile file) {
-        String fileName = fileStorageService.store(file);
-        String fileUrl = fileStorageService.getFileUrl(fileName);
+        String fileUrl = fileStorageService.store(file);
         post.setPostPicture(fileUrl);
         postRepository.update(post);
     }

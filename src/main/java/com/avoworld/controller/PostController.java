@@ -118,10 +118,10 @@ public class PostController {
         return objectMapper.readValue(postJson, Post.class);
     }
 
-//    @PutMapping("/{postId}/views")
-//    public void incrementPostViews(@PathVariable("postId") Long postId) {
-//        postService.incrementPostViews(postId);
-//    }
+    @PutMapping("/{postId}/views")
+    public void incrementPostViews(@PathVariable("postId") Long postId) {
+        postService.incrementPostViews(postId);
+    }
 
     @GetMapping("/{postId}/comments")
     public List<Comment> getCommentsByPostId(@PathVariable("postId") Long postId) {

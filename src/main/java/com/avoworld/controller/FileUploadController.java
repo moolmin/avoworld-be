@@ -31,8 +31,7 @@ public class FileUploadController {
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             validateFile(file);
-            String filename = fileStorageService.store(file);
-            String fileDownloadUri = fileStorageService.getFileUrl(filename);
+            String fileDownloadUri = fileStorageService.store(file);
             return ResponseEntity.ok(fileDownloadUri);
         } catch (FileValidationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file: " + e.getMessage());
@@ -66,8 +65,7 @@ public class FileUploadController {
     public ResponseEntity<Map<String, String>> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
         try {
             validateFile(file);
-            String filename = fileStorageService.store(file);
-            String fileDownloadUri = fileStorageService.getFileUrl(filename);
+            String fileDownloadUri = fileStorageService.store(file);
 
             Map<String, String> response = new HashMap<>();
             response.put("url", fileDownloadUri);
