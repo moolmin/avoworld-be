@@ -8,6 +8,9 @@ import com.avoworld.service.AuthService;
 import com.avoworld.service.CustomUserDetailsService;
 import com.avoworld.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -60,7 +63,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .addFilterBefore(new LoginFilter("/api/login", authenticationManager, jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JoinFilter("/api/join", authenticationManager, authService, jwtUtil, fileStorageService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .requiresChannel(channel -> channel.anyRequest().requiresSecure()); // HTTP 요청을 HTTPS로 리디렉션
 
         return http.build();
     }
@@ -73,7 +77,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://avoworld-bucket.s3-website.ap-northeast-2.amazonaws.com", "http://localhost:3000", "https://d1amfwl7k2194s.cloudfront.net", "http://d1amfwl7k2194s.cloudfront.net"));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://avoworld-bucket.s3-website.ap-northeast-2.amazonaws.com",
+                "http://localhost:3000",
+                "https://d1amfwl7k2194s.cloudfront.net",
+                "http://d1amfwl7k2194s.cloudfront.net"
+        ));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -83,5 +92,18 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public WebServerFactoryCustomizer<TomcatServletWebServerFactory> webServerFactoryCustomizer() {
+        return factory -> {
+            Ssl ssl = new Ssl();
+            ssl.setKeyStore("classpath:keystore.p12");
+            ssl.setKeyStorePassword("${KEYSTORE_PASSWORD}");
+            ssl.setKeyStoreType("PKCS12");
+            ssl.setKeyAlias("${KEYSTORE_ALIAS}");
+            factory.setSsl(ssl);
+            factory.setPort(8443);
+        };
     }
 }
