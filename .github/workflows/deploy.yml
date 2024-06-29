@@ -94,5 +94,5 @@ jobs:
               -e S3_BUCKET=${{ secrets.S3_BUCKET }} \
               -e KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
               -e KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
-              -v $(pwd)/keystore.p12:/app/keystore.p12 \
+              -v /path/to/keystore.p12:/app/keystore.p12 \
               ${{ secrets.ECR_URL }}/avoworld:latest
