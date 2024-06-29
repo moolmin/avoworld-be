@@ -60,8 +60,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Authenticate Docker to AWS ECR
-        id: ecr-login
+#      - name: Authenticate Docker to AWS ECR
+#        id: ecr-login
 #        run: |
 #          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_URL }}
 
