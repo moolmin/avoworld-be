@@ -37,7 +37,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker image
-        run: docker build --platform linux/amd64 -t avoworld:latest .
+        run: docker build --no-cache --platform linux/amd64 -t avoworld:latest .
 
       - name: Tag Docker image
         run: docker tag avoworld:latest ${{ secrets.ECR_URL }}/avoworld:latest
@@ -60,14 +60,16 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # Pull the latest Docker image from ECR
-            docker pull ${{ secrets.ECR_URL }}/avoworld:latest
-            
             # Stop the existing container if it's running
             docker stop avoworld || true
             
             # Remove the existing container if it exists
             docker rm avoworld || true
+            docker rmi ${{ secrets.ECR_URL }}/avoworld:latest || true
+            
+            # Pull the latest Docker image from ECR
+            docker pull ${{ secrets.ECR_URL }}/avoworld:latest
+            
             
             # Run a new container with the updated image
             docker run -d --name avoworld -p 8080:8080 \
