@@ -64,6 +64,9 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_P12 }}" | base64 --decode > keystore.p12
 
+      - name: Print keystore password
+        run: echo ${{ secrets.KEYSTORE_PASSWORD }}
+
       - name: List keystore aliases
         run: |
           keytool -list -keystore keystore.p12 -storetype PKCS12 -storepass ${{ secrets.KEYSTORE_PASSWORD }}
@@ -88,6 +91,9 @@ jobs:
 
             # Ensure correct permissions for the keystore file
             sudo chmod 644 keystore.p12
+
+            # Debug: Check the content of keystore.p12
+            sudo cat keystore.p12 | base64
 
             # Run a new container with the updated image
             docker run -d --name avoworld -p 443:8443 \
