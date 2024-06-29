@@ -10,6 +10,6 @@ public class MainController {
 
     @GetMapping("/")
     public String main() {
-        return "실뱌의 avoworld를 위한 서버 엔드포인트입니다 0630.";
+        return "테스트 2트 - 실뱌의 avoworld를 위한 서버 엔드포인트입니다.";
     }
 }
