@@ -60,17 +60,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Decode and save keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_P12 }}" | base64 --decode > keystore.p12
-
-      - name: Print keystore password
-        run: echo ${{ secrets.KEYSTORE_PASSWORD }}
-
-      - name: List keystore aliases
-        run: |
-          keytool -list -keystore keystore.p12 -storetype PKCS12 -storepass ${{ secrets.KEYSTORE_PASSWORD }}
-
       - name: SSH to EC2 and deploy
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -89,14 +78,8 @@ jobs:
             # Remove the existing container if it exists
             docker rm avoworld || true
 
-            # Ensure correct permissions for the keystore file
-            sudo chmod 644 keystore.p12
-
-            # Debug: Check the content of keystore.p12
-            sudo cat keystore.p12 | base64
-
             # Run a new container with the updated image
-            docker run -d --name avoworld -p 443:8443 \
+            docker run -d --name avoworld -p 8080:8080 \
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
@@ -105,7 +88,4 @@ jobs:
               -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
               -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
               -e S3_BUCKET=${{ secrets.S3_BUCKET }} \
-              -e KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
-              -e KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
-              -v $(pwd)/keystore.p12:/app/keystore.p12 \
               ${{ secrets.ECR_URL }}/avoworld:latest
