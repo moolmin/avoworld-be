@@ -82,8 +82,11 @@ jobs:
             # Remove the existing container if it exists
             docker rm avoworld || true
 
+            # Ensure correct permissions for the keystore file
+            sudo chmod 644 keystore.p12
+
             # Run a new container with the updated image
-            docker run -d --name avoworld -p 8443:8443 \
+            docker run -d --name avoworld -p 443:443 \
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
@@ -94,5 +97,5 @@ jobs:
               -e S3_BUCKET=${{ secrets.S3_BUCKET }} \
               -e KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
               -e KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} \
-              -v /path/to/keystore.p12:/app/keystore.p12 \
+              -v $(pwd)/keystore.p12:/app/keystore.p12 \
               ${{ secrets.ECR_URL }}/avoworld:latest
