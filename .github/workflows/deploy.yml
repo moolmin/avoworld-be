@@ -53,6 +53,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Authenticate Docker to AWS ECR
+        id: ecr-login
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_URL }}
+
       - name: SSH to EC2 and deploy
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -62,13 +74,13 @@ jobs:
           script: |
             # Pull the latest Docker image from ECR
             docker pull ${{ secrets.ECR_URL }}/avoworld:latest
-            
+
             # Stop the existing container if it's running
             docker stop avoworld || true
-            
+
             # Remove the existing container if it exists
             docker rm avoworld || true
-            
+
             # Run a new container with the updated image
             docker run -d --name avoworld -p 8080:8080 \
               -e DB_URL=${{ secrets.DB_URL }} \
@@ -80,3 +92,4 @@ jobs:
               -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
               -e S3_BUCKET=${{ secrets.S3_BUCKET }} \
               ${{ secrets.ECR_URL }}/avoworld:latest
+  
