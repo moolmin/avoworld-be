@@ -10,6 +10,6 @@ public class MainController {
 
     @GetMapping("/")
     public String main() {
-        return "테스트 3트 - 실뱌의 avoworld를 위한 서버 엔드포인트입니다.";
+        return "index";
     }
 }
