@@ -10,7 +10,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
         corsRegistry.addMapping("/**")
-                .allowedOrigins("http://avoworld-bucket.s3-website.ap-northeast-2.amazonaws.com", "http://localhost:3000", "https://d1amfwl7k2194s.cloudfront.net", "http://d1amfwl7k2194s.cloudfront.net")
+                .allowedOrigins("http://avoworld-bucket.s3-website.ap-northeast-2.amazonaws.com", "http://localhost:3000", "https://d1jlocd3s0jxr6.cloudfront.net", "http://d1jlocd3s0jxr6.cloudfront.net")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
