@@ -3,7 +3,6 @@ package com.avoworld.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.annotation.PostConstruct;
 import java.io.File;
@@ -54,7 +53,7 @@ public class FileStorageService {
         String filename = UUID.randomUUID().toString() + "-" + sanitizeFilename(file.getOriginalFilename());
         try {
             if (file.isEmpty()) {
-                throw new RuntimeException("Failed to store aempty file.");
+                throw new RuntimeException("Failed to store empty file.");
             }
 
             File convertedFile = convert(file, filename);
