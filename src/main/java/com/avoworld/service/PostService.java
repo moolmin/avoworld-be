@@ -7,6 +7,7 @@ import com.avoworld.repository.CommentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -70,6 +71,7 @@ public class PostService {
     }
 
     public void updateComment(Comment comment) {
+        comment.setUpdateAt(LocalDateTime.now());
         commentRepository.update(comment);
     }
 
