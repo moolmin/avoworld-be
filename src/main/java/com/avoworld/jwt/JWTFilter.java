@@ -32,7 +32,7 @@ public class JWTFilter extends OncePerRequestFilter {
         AntPathMatcher pathMatcher = new AntPathMatcher();
 
         return pathMatcher.match("/api/join", requestURI) ||
-               pathMatcher.match("/api/accounts/check-email", requestURI) ||
+               pathMatcher.match("/api/accounts/**", requestURI) ||
                pathMatcher.match("/uploads/**", requestURI) ||
                pathMatcher.match("/api/posts/**", requestURI); 
     }
